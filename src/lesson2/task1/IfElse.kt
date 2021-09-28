@@ -70,6 +70,7 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  */
 fun ageDescription(age: Int): String {
     return when {
+        age % 100 in 11..19 -> "$age лет"
         age % 10 == 1 -> "$age год"
         age % 10 in 2..4 -> "$age года"
         else -> "$age лет"
@@ -94,7 +95,7 @@ fun timeForHalfWay(
     val sHalf: Double = (s1 + s2 + s3) / 2
     return when {
         sHalf <= s1 -> sHalf / v1
-        sHalf <= s2 -> (sHalf - s1) / v2 + t1
+        sHalf <= s1 + s2 -> (sHalf - s1) / v2 + t1
         else -> (sHalf - s1 - s2) / v3 + t1 + t2
     }
 }
@@ -148,4 +149,13 @@ fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = TODO()
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
+    return when {
+        a > d -> -1
+        b < c -> -1
+        (c < a) && (b < d) -> b - a
+        (a < c) && (d < b) -> d - c
+        b < d -> b - c
+        else -> d - a
+    }
+}
