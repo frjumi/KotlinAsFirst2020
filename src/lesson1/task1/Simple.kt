@@ -83,9 +83,8 @@ fun lengthInMeters(sagenes: Int, arshins: Int, vershoks: Int): Double = TODO()
  * Вывести значение того же угла в радианах (например, 0.63256).
  */
 fun angleInRadian(deg: Int, min: Int, sec: Int): Double {
-    val inSeconds: Int = deg * 60 * 60 + min * 60 + sec
-    val inRadians: Double = inSeconds * 4.85 * 10e-6
-    return(inRadians)
+    val inDegrees: Double = sec.toDouble() / (60 * 60) + min.toDouble() / 60 + deg
+    return(inDegrees * 0.0174533)
 }
 
 /**
@@ -123,13 +122,7 @@ fun travelMinutes(hoursDepart: Int, minutesDepart: Int, hoursArrive: Int, minute
  * Сколько денег будет на счету через 3 года (с учётом сложных процентов)?
  * Например, 100 рублей под 10% годовых превратятся в 133.1 рубля
  */
-fun accountInThreeYears(initial: Int, percent: Int): Double {
-    var deposit: Double = initial.toDouble()
-    for (i in 1..3) {
-        deposit += deposit * percent
-    }
-    return(deposit)
-}
+fun accountInThreeYears(initial: Int, percent: Int): Double = (initial + (initial * percent.toDouble() / 100).pow(3))
 
 /**
  * Простая (2 балла)
