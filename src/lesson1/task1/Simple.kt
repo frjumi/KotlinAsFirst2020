@@ -84,7 +84,7 @@ fun lengthInMeters(sagenes: Int, arshins: Int, vershoks: Int): Double = TODO()
  */
 fun angleInRadian(deg: Int, min: Int, sec: Int): Double {
     val inDegrees: Double = sec.toDouble() / (60 * 60) + min.toDouble() / 60 + deg
-    return(inDegrees * 0.0174533)
+    return(inDegrees * 0.01745329252)
 }
 
 /**
