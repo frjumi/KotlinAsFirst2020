@@ -41,6 +41,8 @@ class Tests {
         assertEquals("03.04.2011", dateStrToDigit("3 апреля 2011"))
         assertEquals("", dateStrToDigit("32 сентября 2011"))
         assertEquals("", dateStrToDigit("29 февраля 1993"))
+        assertEquals("01.01.1", dateStrToDigit("01 января 1"))
+        assertEquals("", dateStrToDigit("aaaaaaaaaaa aaaaaaaaaaaaaaaa7aaaaaaaaaaa aaaaa"))
     }
 
     @Test
@@ -93,7 +95,8 @@ class Tests {
         assertEquals(4, plusMinus("2 + 2"))
         assertEquals(6, plusMinus("2 + 31 - 40 + 13"))
         assertEquals(-1, plusMinus("0 - 1"))
-        assertThrows(IllegalArgumentException::class.java) { plusMinus("+2") }
+        assertThrows(IllegalArgumentException::class.java) { plusMinus(" ") }
+        assertThrows(IllegalArgumentException::class.java) { plusMinus("a") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("+ 4") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("4 - -2") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("44 - - 12") }
