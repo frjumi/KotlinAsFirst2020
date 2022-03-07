@@ -4,7 +4,7 @@ package lesson7.task1
 
 import ru.spbstu.kotlin.generate.assume.retry
 import java.io.File
-import java.io.PrintStream
+import java.util.*
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -65,13 +65,14 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Подчёркивание в середине и/или в конце строк значения не имеет.
  */
 fun deleteMarked(inputName: String, outputName: String) {
-    val writer = File(outputName).bufferedWriter()
-    for (line in File(inputName).readLines()) {
-        if (!line.startsWith("_")) {
-            writer.write("$line\n")
+    File(outputName).bufferedWriter().use {
+        for (line in File(inputName).readLines()) {
+            if (!line.startsWith("_")) {
+                it.write(line)
+                it.newLine()
+            }
         }
     }
-    writer.close()
 }
 
 /**
@@ -83,7 +84,20 @@ fun deleteMarked(inputName: String, outputName: String) {
  * Регистр букв игнорировать, то есть буквы е и Е считать одинаковыми.
  *
  */
-fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> = TODO()
+fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
+    val input = File(inputName).reader().use { it.readText().lowercase() }
+    var result = mutableMapOf<String, Int>()
+    for (substring in substrings) {
+        var counter = 0
+        var index = input.indexOf(substring.lowercase())
+        while (index != -1) {
+            counter++
+            index = input.indexOf(substring.lowercase(), index + 1)
+        }
+        result[substring] = counter
+    }
+    return result
+}
 
 
 /**

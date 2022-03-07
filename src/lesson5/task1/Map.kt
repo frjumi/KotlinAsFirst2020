@@ -2,7 +2,7 @@
 
 package lesson5.task1
 
-import lesson4.task1.mean
+import kotlin.time.seconds
 
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
@@ -177,13 +177,12 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> {
  *   ) -> mapOf("Emergency" to "112, 911", "Police" to "02")
  */
 fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> {
-    val res = mapA.toMutableMap()
-    mapB.forEach { (key, value) ->
-        if (res.containsKey(key) && (value != res[key])) {
-            res[key] += ", $value"
-        } else res += Pair(key, value)
+    val result: MutableMap<String, String> = mapA.toMutableMap()
+    for ((key, value) in mapB) {
+        if (key in mapA && mapA[key] != mapB[key]) result[key] += ", $value"
+        else result += key to value
     }
-    return res
+    return result
 }
 
 /**
@@ -196,20 +195,9 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *   averageStockPrice(listOf("MSFT" to 100.0, "MSFT" to 200.0, "NFLX" to 40.0))
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
-fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
-    val res = mutableMapOf<String, Double>()
-    val list = mutableMapOf<String, MutableList<Double>>()
-    stockPrices.forEach { (key, value) ->
-        if (list[key].isNullOrEmpty())
-            list[key] = mutableListOf(value)
-        else list[key]?.add(value)
-    }
-    list.forEach { (key, value) ->
-        val per = mean(value)
-        res += Pair(key, per)
-    }
-    return res
-}
+
+fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> =
+    stockPrices.groupByTo(mutableMapOf(), { it.first }, { it.second }).mapValues { it.value.average() }
 
 /**
  * Средняя (4 балла)
@@ -226,28 +214,17 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *     "печенье"
  *   ) -> "Мария"
  */
+
+
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    var res = ""
-    var minPrice = Double.MAX_VALUE
-    val list = mutableMapOf<String, MutableList<Double>>()
-    stuff.forEach { (key, value) ->
-        if (value.first == kind) {
-            if (list[key].isNullOrEmpty())
-                list[key] = mutableListOf(value.second)
-            else list[key]?.add(value.second)
-        }
-    }
-    for ((key, value) in list) {
-        for (element in value) {
-            if (element <= minPrice) {
-                minPrice = element
-                res = key
-            }
-        }
-    }
-    return res.ifEmpty { null }
+    val desiredKind = stuff.filter { it.value.first == kind }
+    return (desiredKind.minByOrNull { it.value.second })?.key
 }
 
+/** {
+var desiredKind = stuff.filter { it.value.first == kind }
+println(desiredKind)
+ */
 /**
  * Средняя (3 балла)
  *
@@ -340,29 +317,40 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 4) -> Pair(0, 2)
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
+
+
+
+/**
+Не могу понять, как в этом задании избавиться от ? здесь:
+    map[list[i]]?.plusAssign(i)
+Тут я изначально хотел добавлять в список индекс i простым оператором += после проверки (map[list[i]] != null)
+
+и от !! здесь:
+    if (map[i]!!.size > 1) return Pair(map[i]!![0], map[i]!![1])
+
+Я пытался предварительно проверять значения на неравенство null, но видимо из-за того, что это значения ассоциативного
+массива, такая проверка ничего не даёт. Элвис-оператор также не получилось грамотно использовать.
+
+Подскажите пожалуйста, как в таких ситуациях лучше поступать, т.к. сталкиваюсь я с ними регулярно и часто непонятно,
+как избежать постоянного использования !! и ?
+*/
+
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    var result = Pair<Int, Int>(-1, -1)
-    val resList = mutableMapOf<Int, Int>()
-    for ((index, element) in list.withIndex()) {
-        if (element <= number) resList[index] = element
+    val map = mutableMapOf<Int, MutableList<Int>>()
+    for (i in list.indices) {
+        if (map[list[i]] != null) {
+            map[list[i]]?.plusAssign(i)
+        } else map[list[i]] = mutableListOf(i)
+
     }
-    for ((index, firstNumber) in resList) {
-        val resList2 = resList - index
-        if (resList2.containsValue(number - firstNumber)) {
-            val num = findKey(resList2, number - firstNumber)
-            result = if (index > num) Pair(num, index)
-            else Pair(index, num)
+    for (i in 0..number) {
+        if (i in map && number - i in map) {
+            if (i == number - i) {
+                if (map[i]!!.size > 1) return Pair(map[i]!![0], map[i]!![1])
+            } else return Pair(list.indexOf(i), list.indexOf(number - i))
         }
     }
-    return result
-}
-fun findKey(map: Map<Int, Int>, value: Int): Int {
-    var result = 0
-    val number = value
-    map.forEach { (key, value) ->
-        if (value == number) result = key
-    }
-    return result
+    return Pair(-1, -1)
 }
 
 /**
@@ -386,4 +374,33 @@ fun findKey(map: Map<Int, Int>, value: Int): Int {
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    val names = treasures.keys.toList()
+
+    var memTable = mutableListOf<IntArray>()
+    for (i in 0..names.size) {
+        memTable.add(i, IntArray(capacity + 1))
+    }
+
+    for (name in 1..names.size) {
+        for (weight in 1..capacity) {
+            if (weight >= treasures[names[name - 1]]!!.first) {
+                memTable[name][weight] = maxOf(
+                    memTable[name - 1][weight],
+                    memTable[name - 1][weight - treasures[names[name - 1]]!!.first] + treasures[names[name - 1]]!!.second
+                )
+            } else {
+                memTable[name][weight] = memTable[name - 1][weight]
+            }
+        }
+    }
+    var weight = capacity
+    var result = mutableSetOf<String>()
+    for (name in names.size downTo 1) {
+        if (memTable[name][weight] != memTable[name - 1][weight]) {
+            result.add(names[name - 1])
+            weight -= treasures[names[name - 1]]!!.first
+        }
+    }
+    return result
+}

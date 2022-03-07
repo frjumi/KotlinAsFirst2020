@@ -3,9 +3,6 @@
 package lesson2.task2
 
 import lesson1.task1.sqr
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.sqrt
 
 /**
@@ -22,8 +19,7 @@ fun pointInsideCircle(x: Double, y: Double, x0: Double, y0: Double, r: Double) =
  * Четырехзначное число назовем счастливым, если сумма первых двух ее цифр равна сумме двух последних.
  * Определить, счастливое ли заданное число, вернуть true, если это так.
  */
-fun isNumberHappy(number: Int): Boolean = (number / 1000 + number / 100 % 10 == number % 10 + number % 100 / 10)
-
+fun isNumberHappy(number: Int): Boolean = number % 100 / 10 + number % 10 == number / 100 % 10 + number / 1000
 
 /**
  * Простая (2 балла)
@@ -67,7 +63,7 @@ fun daysInMonth(month: Int, year: Int): Int {
 fun circleInside(
     x1: Double, y1: Double, r1: Double,
     x2: Double, y2: Double, r2: Double
-): Boolean = sqrt(sqr(x1 - x2) + sqr(y1 - y2)) + r1 <= r2
+): Boolean = sqrt(sqr(x2 - x1) + sqr(y2 - y1)) <= r2 - r1
 
 /**
  * Средняя (3 балла)
@@ -78,11 +74,5 @@ fun circleInside(
  * кирпич 4 х 4 х 4 пройдёт через отверстие 4 х 4.
  * Вернуть true, если кирпич пройдёт
  */
-fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean {
-    val minWall = min(r, s)
-    val maxWall = max(r, s)
-    val minBrick = minOf(a, b, c)
-    val maxBrick = maxOf(a, b, c)
-    val averageBrick = a + b + c - minBrick - maxBrick
-    return (maxWall >= averageBrick && minWall >= minBrick)
-}
+fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean =
+    (minOf(a, b, c) <= minOf(r, s)) && ((a + b + c - maxOf(a, b, c) - minOf(a, b, c)) <= maxOf(r, s))

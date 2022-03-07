@@ -3,7 +3,7 @@
 package lesson4.task1
 
 import lesson1.task1.discriminant
-import lesson3.task1.isPrime
+import kotlin.math.pow
 import kotlin.math.sqrt
 
 // Урок 4: списки
@@ -128,7 +128,7 @@ fun abs(v: List<Double>): Double = sqrt(v.sumOf { it * it })
  *
  * Рассчитать среднее арифметическое элементов списка list. Вернуть 0.0, если список пуст
  */
-fun mean(list: List<Double>): Double = if (list.isNotEmpty()) (list.sum() / list.size) else 0.0
+fun mean(list: List<Double>): Double = if (list.isEmpty()) 0.0 else list.sum() / list.size
 
 /**
  * Средняя (3 балла)
@@ -139,13 +139,13 @@ fun mean(list: List<Double>): Double = if (list.isNotEmpty()) (list.sum() / list
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun center(list: MutableList<Double>): MutableList<Double> {
-    val arithmeticMean = mean(list)
-    return if (list.isNotEmpty()) {
-        for (i in 0 until list.size) {
-            list[i] -= arithmeticMean
-        }
-        list
-    } else list
+    val meanList = mean(list)
+    if (list.isEmpty()) return list
+    for (i in 0 until list.size) {
+        list[i] -= meanList
+    }
+    return list
+
 }
 
 /**
@@ -156,8 +156,11 @@ fun center(list: MutableList<Double>): MutableList<Double> {
  * C = a1b1 + a2b2 + ... + aNbN. Произведение пустых векторов считать равным 0.
  */
 fun times(a: List<Int>, b: List<Int>): Int {
-    val result = a.zip(b) { elem1, elem2 -> elem1 * elem2 }
-    return if (result.isNotEmpty()) result.sum() else 0
+    var innerProduct = 0
+    for (i in a.indices) {
+        innerProduct += a[i] * b[i]
+    }
+    return innerProduct
 }
 
 /**
@@ -192,10 +195,8 @@ fun polynom(p: List<Int>, x: Int): Int {
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun accumulate(list: MutableList<Int>): MutableList<Int> {
-    if (list.isEmpty()) return list
-    for (index in list.indices) {
-        if (index > 0)
-            list[index] += list[index - 1]
+    for (i in 1 until list.size) {
+        list[i] += list[i - 1]
     }
     return list
 }
@@ -208,24 +209,16 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
  * Множители в списке должны располагаться по возрастанию.
  */
 fun factorize(n: Int): List<Int> {
-    val list = mutableListOf<Int>()
-    var d = 2
-    var newN = n
-    if (isPrime(n)) list += n
-    else {
-        while (d * d <= newN) {
-            if (newN % d == 0) {
-                list.add(d)
-                newN /= d
-            } else {
-                d += 1
-            }
-        }
-        if (newN > 1) {
-            list.add(newN)
+    var number = n
+    val result = mutableListOf<Int>()
+    for (i in 2..sqrt(number.toDouble()).toInt()) {
+        while (number % i == 0) {
+            result += i
+            number /= i
         }
     }
-    return list
+    if (number != 1) result += number
+    return result
 }
 
 /**
@@ -280,7 +273,17 @@ fun decimal(digits: List<Int>, base: Int): Int = TODO()
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun decimalFromString(str: String, base: Int): Int = TODO()
+
+fun decimalFromString(str: String, base: Int): Int {
+    var result = 0
+    var degree = str.length - 1
+    for (digit in str.indices) {
+        result += if (str[digit].isDigit()) ((str[digit] - '0') * base.toDouble().pow(degree)).toInt()
+        else ((10 + (str[digit] - 'a')) * base.toDouble().pow(degree)).toInt()
+        degree--
+    }
+    return result
+}
 
 /**
  * Сложная (5 баллов)
@@ -290,18 +293,19 @@ fun decimalFromString(str: String, base: Int): Int = TODO()
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
+
 fun roman(n: Int): String {
-    val list1 = listOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
-    val list2 = listOf("M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I")
-    var newN = n
-    val result = mutableListOf<String>()
-    for ((index, element) in list1.withIndex()) {
-        while (element <= newN) {
-            result.add(list2[index])
-            newN -= element
+    var number = n
+    val arabic = arrayOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
+    val roman = listOf("M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I")
+    var result = ""
+    for (i in arabic.indices) {
+        while (number >= arabic[i]) {
+            result += roman[i]
+            number -= arabic[i]
         }
     }
-    return result.joinToString(separator = "")
+    return result
 }
 
 

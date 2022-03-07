@@ -3,6 +3,8 @@
 package lesson3.task1
 
 import lesson1.task1.sqr
+import kotlin.math.abs
+import kotlin.math.pow
 import kotlin.math.sqrt
 
 // Урок 3: циклы
@@ -74,13 +76,13 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun digitNumber(n: Int): Int {
-    var count = 0
-    var divTen = n
+    var counter = 0
+    var number = n
     do {
-        count++
-        divTen /= 10
-    } while (divTen != 0)
-    return count
+        counter++
+        number /= 10
+    } while (number != 0)
+    return (counter)
 }
 
 /**
@@ -90,14 +92,13 @@ fun digitNumber(n: Int): Int {
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
 fun fib(n: Int): Int {
-    var a = 0
+    var a = 1
     var b = 1
-    for (i in 1..n) {
-        val sum = a + b
-        a = b
-        b = sum
+    for (i in 2 until n) {
+        b = a + b
+        a = b - a
     }
-    return a
+    return (b)
 }
 
 /**
@@ -106,13 +107,8 @@ fun fib(n: Int): Int {
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    var divisor = 0
-    for (i in 2..n) {
-        if (n % i > 0) continue
-        divisor = i
-        break
-    }
-    return divisor
+    for (i in 2..sqrt(n.toDouble()).toInt()) if (n % i == 0) return i
+    return n
 }
 
 /**
@@ -158,18 +154,14 @@ fun collatzSteps(x: Int): Int {
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int {
-    var numberOne = m
-    var numberTwo = n
-    while (numberOne != 0 && numberTwo != 0) {
-        if (numberOne > numberTwo) {
-            numberOne %= numberTwo
-        } else {
-            numberTwo %= numberOne
-        }
-    }
-    return (m * n / (numberOne + numberTwo))
+// Вычисляем НОД по алгоритму Евклида
+fun gcd(m: Int, n: Int): Int {
+    return if (n == 0) m
+    else gcd(n, m % n)
 }
+
+// Вычисляем НОК с помощью НОД
+fun lcm(m: Int, n: Int): Int = m / gcd(m, n) * n
 
 /**
  * Средняя (3 балла)
@@ -178,8 +170,7 @@ fun lcm(m: Int, n: Int): Int {
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean = lcm(m, n) / (m * n) == 1
-
+fun isCoPrime(m: Int, n: Int): Boolean = gcd(m, n) == 1
 
 /**
  * Средняя (3 балла)
@@ -259,19 +250,13 @@ fun cos(x: Double, eps: Double): Double = TODO()
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun squareSequenceDigit(n: Int): Int {
-    var count = 0
-    var square = 0
-    for (i in 1..n) {
-        if (count < n) {
-            square = sqr(i)
-            count += digitNumber(square)
-        } else break
+    var totalDigitNmb = 0
+    var i = 0
+    while (totalDigitNmb < n) {
+        i++
+        totalDigitNmb += digitNumber(sqr(i))
     }
-    while (count > n) {
-        square /= 10
-        count -= 1
-    }
-    return square % 10
+    return sqr(i) / 10.0.pow(totalDigitNmb - n).toInt() % 10
 }
 
 /**
@@ -284,17 +269,12 @@ fun squareSequenceDigit(n: Int): Int {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun fibSequenceDigit(n: Int): Int {
-    var count = 0
-    var fibonacci = 0
-    for (i in 1..n) {
-        if (count < n) {
-            fibonacci = fib(i)
-            count += digitNumber(fibonacci)
-        } else break
+    var totalDigitNmb = 0
+    var i = 0
+    while (totalDigitNmb < n) {
+        i++
+        totalDigitNmb += digitNumber(fib(i))
     }
-    while (count > n) {
-        fibonacci /= 10
-        count -= 1
-    }
-    return fibonacci % 10
+    val degree: Int = 10.0.pow(totalDigitNmb - n).toInt()
+    return fib(i) / degree % 10
 }

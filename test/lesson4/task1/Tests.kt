@@ -210,6 +210,7 @@ class Tests {
     @Test
     @Tag("4")
     fun decimalFromString() {
+        assertEquals(15, decimalFromString("f", 16))
         assertEquals(1, decimalFromString("1", 2))
         assertEquals(100, decimalFromString("1210", 4))
         assertEquals(250, decimalFromString("13c", 14))
@@ -226,6 +227,8 @@ class Tests {
         assertEquals("MCMLXXVIII", roman(1978))
         assertEquals("DCXCIV", roman(694))
         assertEquals("XLIX", roman(49))
+        assertEquals("MMMMMMMMMCMXCIX", roman(9999))
+
     }
 
     @Test
